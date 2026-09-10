@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "docs/src",
+    "outDir": "docs/.generated/build",
+    "declaration": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@minitype/tsx"
+  },
+  "include": [
+    "docs/src/**/*.ts",
+    "docs/src/**/*.tsx"
+  ]
+}

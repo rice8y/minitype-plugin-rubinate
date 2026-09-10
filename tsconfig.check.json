@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "paths": {
+      "minitype-plugin-rubinate": [
+        "./src/index.ts"
+      ],
+      "minitype-plugin-rubinate/tsx": [
+        "./src/tsx.ts"
+      ]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "@minitype/tsx"
+  },
+  "include": [
+    "src/**/*.ts",
+    "examples/**/*.ts",
+    "docs/src/**/*.ts",
+    "tests/**/*.tsx",
+    "examples/**/*.tsx",
+    "docs/src/**/*.tsx"
+  ]
+}

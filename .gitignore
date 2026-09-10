@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tgz
+*.pdf
+.minitype/
+font-caches.db
+tmp/
+output/
+target/
+docs/.generated/
+examples/.generated/
+!docs/documentation.pdf

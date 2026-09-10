@@ -1,0 +1,61 @@
+{
+  "name": "minitype-plugin-rubinate",
+  "version": "0.1.0",
+  "description": "Automatic Japanese ruby for minitype using Lindera IPADIC/UniDic WASM and furigana dictionaries",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./tsx": {
+      "types": "./dist/tsx.d.ts",
+      "import": "./dist/tsx.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "examples/*.ts",
+    "assets",
+    "wasm-plugins",
+    "scripts/rebuild-wasm.mjs",
+    "src",
+    "tsconfig.json",
+    "tests",
+    "docs/README.md",
+    "docs/documentation.pdf",
+    "docs/src",
+    "docs/assets",
+    "tsconfig.docs.json",
+    "tsconfig.check.json",
+    "tsconfig.examples.json",
+    "examples/*.tsx",
+    "tsconfig.tests.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.check.json",
+    "test": "npm run build && npm run check && tsc -p tsconfig.tests.json && node --test tests/*.test.mjs tmp/tests/*.test.js",
+    "example": "npm run build && tsc -p tsconfig.examples.json && node examples/.generated/basic.js",
+    "prepack": "npm run build",
+    "documentation": "npm run build && npm run check && tsc -p tsconfig.docs.json && node docs/.generated/build/index.js",
+    "documentation:images": "npm run build && npm run check && tsc -p tsconfig.docs.json && node docs/.generated/build/readme-images.js",
+    "example:tsx": "npm run build && tsc -p tsconfig.examples.json && node examples/.generated/tsx.js"
+  },
+  "engines": {
+    "node": "^20.16.0 || >=22.3.0"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@minitype/minitype": ">=0.1.6"
+  },
+  "devDependencies": {
+    "@minitype/minitype": "0.1.6",
+    "@minitype/tsx": "^0.1.1",
+    "@types/node": "^20.19.43",
+    "typescript": "^5.8.0"
+  }
+}
