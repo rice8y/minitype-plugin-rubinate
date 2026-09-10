@@ -101,9 +101,11 @@ interface AnalyzedToken extends Morpheme {
         referenceCode(`import { minitype, p, em } from "@minitype/minitype";
 import { autoRuby } from "minitype-plugin-rubinate";
 
-await minitype([{ body: [
+const document = [{ body: [
   p([await autoRuby("お茶を淹れる。")]),
-] }], {
+] }];
+
+await minitype(document, {
   block: { paragraph: {
     lineHeight: em(2),
     rubySize: em(0.5), rubyOffset: em(0.1),
@@ -127,7 +129,7 @@ npm test
 npm run example
 npm run documentation
 npm pack`, "Shell commands", false, "bash"), vspace(3),
-        text("After npm run build, install the local directory in your document project with npm install /path/to/minitype-plugin-rubinate and install @minitype/minitype. The package has not been published to npm."),
+        text("Install the published package with npm install minitype-plugin-rubinate @minitype/minitype."),
         vspace(3),
         label("Runtime and shipped assets"),
         text("Node.js 20.16+ (20.x) or 22.3+; minitype 0.1.6+. The Node loader reads local assets, with no analysis-time network request or native addon. IPADIC is about 11 MiB, UniDic 44 MiB and correspondence 5.4 MiB. All are packaged; only selected modules load lazily and are shared per process. The async API still runs synchronous WASM work; use a worker when event-loop latency matters."),

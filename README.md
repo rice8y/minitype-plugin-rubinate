@@ -2,21 +2,14 @@
 
 Rubinate is a [minitype](https://typeset.jp) plugin for automatic Japanese ruby, using Lindera and reading correspondence dictionaries.
 
-Rubinate returns standard minitype ruby inlines. minitype handles typography, line breaking and page layout.
+The generated ruby uses standard minitype inlines, with typography, line breaking and page layout handled by minitype.
 
 ## Installation
 
-This package is not yet published to npm. Build and pack this checkout:
+Install the plugin and minitype in your document project:
 
 ```sh
-npm ci
-npm pack
-```
-
-Then install the archive in your document project:
-
-```sh
-npm install /path/to/minitype-plugin-rubinate-0.1.0.tgz @minitype/minitype
+npm install minitype-plugin-rubinate @minitype/minitype
 ```
 
 ## Quick start
@@ -25,14 +18,14 @@ Save as `index.ts`:
 
 ```ts
 import { minitype, p } from "@minitype/minitype";
-import { createRubinate } from "minitype-plugin-rubinate";
+import { autoRuby } from "minitype-plugin-rubinate";
 
-const r = createRubinate();
 const paragraph = p([
-  await r.autoRuby("東京スカイツリーの最寄り駅はとうきょうスカイツリー駅です。"),
+  await autoRuby("東京スカイツリーの最寄り駅はとうきょうスカイツリー駅です。"),
 ]);
 
-await minitype([{ body: [paragraph] }]).save("output.pdf");
+const document = [{ body: [paragraph] }];
+await minitype(document).save("output.pdf");
 ```
 
 ![Typeset result](docs/assets/quick-start.png)
@@ -50,7 +43,9 @@ Use `"type": "module"` in `package.json` and install tsx with `npm install --sav
 
 </details>
 
-Await `autoRuby()` before passing its result to minitype. `p()` expects an array of lines, so wrap the returned inline array: `p([await r.autoRuby(text)])`. The tagged form `` p`${await r.autoRuby(text)}` `` is also supported.
+Await `autoRuby()` before passing its result to minitype. `p()` expects an array of lines, so wrap the returned inline array: `p([await autoRuby(text)])`. The tagged form `` p`${await autoRuby(text)}` `` is also supported.
+
+Use `createRubinate(config)` when you want to share settings across calls or supply a custom tokenizer. It is not required for the example above.
 
 See the [documentation](docs/documentation.pdf) for executable examples, their rendered results and the complete public API.
 
@@ -88,6 +83,7 @@ const document = (
     </Group>
   </Document>
 );
+
 await minitypeJSX(document).save("output.pdf");
 ```
 
@@ -116,7 +112,10 @@ A complete example is in [examples/tsx.tsx](examples/tsx.tsx); run it from this 
 For a reading specified directly in your document, use minitype's `ruby()`. Leave text unannotated by writing it as a plain string, and use Rubinate for the parts that need automatic readings:
 
 ```ts
-import { p, ruby } from "@minitype/minitype";
+import { minitype, p, ruby } from "@minitype/minitype";
+import { createRubinate } from "minitype-plugin-rubinate";
+
+const r = createRubinate();
 
 const sample = "東京タワーの最寄駅は赤羽橋駅です。";
 const paragraph = p([
@@ -124,11 +123,18 @@ const paragraph = p([
   ["東京タワー", ...await r.autoRuby("の最寄駅は"),
     ruby("赤羽橋駅", "あかばねばしえき"), "です。"],
 ]);
+
+const document = [{ body: [paragraph] }];
+await minitype(document).save("output.pdf");
 ```
 
 Use `readings` when processing an existing text string or applying the same reading to matching surfaces throughout the input. `null` suppresses ruby for that surface:
 
 ```ts
+import { minitype, p } from "@minitype/minitype";
+import { createRubinate } from "minitype-plugin-rubinate";
+
+const r = createRubinate();
 const sample = "東京タワーの最寄駅は赤羽橋駅です。";
 const annotated = await r.autoRuby(sample, {
   readings: { "赤羽橋駅": "あかばねばしえき", "東京タワー": null },
@@ -137,6 +143,9 @@ const paragraph = p([
   [...await r.autoRuby(sample)],
   [...annotated],
 ]);
+
+const document = [{ body: [paragraph] }];
+await minitype(document).save("output.pdf");
 ```
 
 Both examples above show the original result first and the edited result below:
@@ -150,6 +159,8 @@ Overrides choose the longest match and bypass dictionary correspondence. They di
 Use a user dictionary when the existing dictionary gives an incorrect reading or word boundary. Each CSV row is `surface,part-of-speech,reading`. Here, the default analyzer reads 赤羽橋駅 as あかはねきょうえき; the user entry corrects it to あかばねばしえき.
 
 ```ts
+import { minitype, p } from "@minitype/minitype";
+import { createRubinate } from "minitype-plugin-rubinate";
 const r = createRubinate({
   userDictionary: "赤羽橋駅,カスタム名詞,アカバネバシエキ",
 });
@@ -158,6 +169,9 @@ const paragraph = p([
   [...await r.autoRuby(sample, { userDictionary: "" })],
   [...await r.autoRuby(sample)],
 ]);
+
+const document = [{ body: [paragraph] }];
+await minitype(document).save("output.pdf");
 ```
 
 For an external UTF-8 file, save the following as `dictionary.csv` (no header):
@@ -167,12 +181,17 @@ For an external UTF-8 file, save the following as `dictionary.csv` (no header):
 ```
 
 ```ts
+import { minitype, p } from "@minitype/minitype";
+import { createRubinate } from "minitype-plugin-rubinate";
 const r = createRubinate({ userDictionaryPath: "./dictionary.csv" });
 const sample = "東京タワーの最寄駅は赤羽橋駅です。";
 const paragraph = p([
   [...await r.autoRuby(sample, { userDictionary: "" })],
   [...await r.autoRuby(sample)],
 ]);
+
+const document = [{ body: [paragraph] }];
+await minitype(document).save("output.pdf");
 ```
 
 Both CSV methods produce the same comparison: before applying the user dictionary on top, and after applying it below:
@@ -188,12 +207,17 @@ Quoted fields and CRLF are supported. Invalid rows reject before entering WASM.
 IPADIC remains the default. In the bundled dictionaries, IPADIC leaves 淹 in お茶を淹れる。 unannotated, while UniDic supplies the reading い. The first line below uses IPADIC; the second uses UniDic.
 
 ```ts
+import { minitype, p } from "@minitype/minitype";
+import { createRubinate } from "minitype-plugin-rubinate";
 const r = createRubinate({ dictionary: "unidic" });
 const sample = "お茶を淹れる。";
 const paragraph = p([
   [...await r.autoRuby(sample, { dictionary: "ipadic" })],
   [...await r.autoRuby(sample)],
 ]);
+
+const document = [{ body: [paragraph] }];
+await minitype(document).save("output.pdf");
 ```
 
 ![Typeset result](docs/assets/unidic.png)
@@ -205,7 +229,7 @@ The dictionaries differ in vocabulary and tokenization; UniDic is not necessaril
 Use `analyze()` to inspect token boundaries, readings and parts of speech, then pass the rows to minitype's `table()`. The range column uses UTF-16 offsets with an exclusive end; `—` indicates a missing reading or part of speech.
 
 ```ts
-import { p, table } from "@minitype/minitype";
+import { minitype, p, table } from "@minitype/minitype";
 import { createRubinate } from "minitype-plugin-rubinate";
 
 const r = createRubinate({ dictionary: "unidic" });
@@ -225,6 +249,9 @@ const analysisTable = table(rows.map(row => row.map(cell => ({
   columnWidths: [24, 30, 65, 30],
   cellPadding: { type: "physical", top: 2, bottom: 2, left: 2, right: 2 },
 });
+
+const document = [{ body: [analysisTable] }];
+await minitype(document).save("output.pdf");
 ```
 
 ![Typeset result](docs/assets/analysis-table.png)

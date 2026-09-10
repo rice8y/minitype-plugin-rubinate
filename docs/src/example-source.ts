@@ -16,26 +16,41 @@ export async function readExampleSource(example: Example) {
 
   const declaration = sourceFile.statements.find(
     (statement): statement is ts.FunctionDeclaration =>
-      ts.isFunctionDeclaration(statement) && statement.name?.text === example.render.name,
+      ts.isFunctionDeclaration(statement) && statement.name?.text === (example.sourceFile.pathname.endsWith(".tsx") ? "tsxRubyDocument" : example.render.name),
   );
   const body = declaration?.body;
   const finalStatement = body?.statements.at(-1);
   if (!body || !finalStatement || !ts.isReturnStatement(finalStatement) ||
     !finalStatement.expression || !ts.isIdentifier(finalStatement.expression) ||
-    finalStatement.expression.text !== "result") {
+    !["result", "document"].includes(finalStatement.expression.text)) {
     throw new Error(`${path}: ${example.render.name} must end with return result.`);
   }
 
   // Context parameters and the final return belong to the example wrapper; the
   // displayed body contains the same statements that produce the returned block.
-  const code = dedent(sourceFile.text.slice(body.getStart(sourceFile) + 1, finalStatement.getFullStart()));
-  const imports = sourceFile.statements
+  const resultDeclaration = body.statements.filter(ts.isVariableStatement)
+    .flatMap(statement => [...statement.declarationList.declarations])
+    .find(declaration => declaration.name.getText(sourceFile) === "result");
+  const returnsArray = resultDeclaration?.initializer && ts.isArrayLiteralExpression(resultDeclaration.initializer);
+  let code = dedent(sourceFile.text.slice(body.getStart(sourceFile) + 1, finalStatement.getFullStart()));
+  let imports = sourceFile.statements
     .filter(ts.isImportDeclaration)
-    .filter(statement => !statement.importClause?.isTypeOnly)
     .map(statement => statement.getText(sourceFile))
     .join("\n");
 
-  return { code, imports };
+  if (example.sourceFile.pathname.endsWith(".tsx")) {
+    imports = imports.replace('import { Document, Group, P }', 'import { Document, Group, P, minitypeJSX }');
+    code += '\n\nawait minitypeJSX(document).save("output.pdf");';
+  } else {
+    imports = imports.replace('import { ', 'import { minitype, ');
+    code += `
+
+const document = [{ body: ${returnsArray ? "result" : "[result]"} }];
+await minitype(document).save("output.pdf");`;
+  }
+  imports = imports.replace('import { docsDirectory } from "../context.js";\n', '').replace('import { docsDirectory } from "../context.js";', '');
+  code = code.replace('new URL("assets/dictionary.csv", docsDirectory)', '"./dictionary.csv"');
+  return { code, imports: imports.trim() };
 }
 
 function dedent(source: string): string {
