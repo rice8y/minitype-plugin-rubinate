@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and check types
+        run: |
+          npm run build
+          npm run check
+
+      - name: Package release ZIP
+        id: package
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          staging="$(mktemp -d)"
+          npm pack --ignore-scripts --json --pack-destination "$staging" > "$staging/pack.json"
+          python3 - "$staging" <<'PY'
+          import json
+          import os
+          import pathlib
+          import sys
+          import tarfile
+          import zipfile
+
+          staging = pathlib.Path(sys.argv[1])
+          tag = os.environ["RELEASE_TAG"]
+          if not tag.startswith("v") or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-" for c in tag):
+              raise SystemExit("Release tag must be a filename-safe v-prefixed version")
+          name = f"minitype-plugin-rubinate-{tag}"
+          archive = pathlib.Path("release") / f"{name}.zip"
+          archive.parent.mkdir(exist_ok=True)
+          packed = json.loads((staging / "pack.json").read_text())[0]
+          with tarfile.open(staging / packed["filename"], "r:gz") as source, zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as target:
+              for member in source.getmembers():
+                  if not member.isfile():
+                      continue
+                  relative = pathlib.PurePosixPath(member.name)
+                  if relative.parts[0] != "package" or ".." in relative.parts:
+                      raise SystemExit(f"Unexpected package path: {member.name}")
+                  with source.extractfile(member) as content:
+                      target.writestr(str(pathlib.PurePosixPath(name, *relative.parts[1:])), content.read())
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"archive={archive.as_posix()}\n")
+          PY
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: ${{ steps.package.outputs.archive }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
