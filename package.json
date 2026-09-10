@@ -2,6 +2,14 @@
   "name": "minitype-plugin-rubinate",
   "version": "0.1.0",
   "description": "Automatic Japanese ruby for minitype using Lindera IPADIC/UniDic WASM and furigana dictionaries",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rice8y/minitype-plugin-rubinate.git"
+  },
+  "homepage": "https://github.com/rice8y/minitype-plugin-rubinate#readme",
+  "bugs": {
+    "url": "https://github.com/rice8y/minitype-plugin-rubinate/issues"
+  },
   "type": "module",
   "exports": {
     ".": {
