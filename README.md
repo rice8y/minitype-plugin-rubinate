@@ -1,6 +1,6 @@
 # minitype-plugin-rubinate
 
-Rubinate provides automatic Japanese ruby for [minitype](https://typeset.jp), using Lindera with IPADIC or UniDic and reading correspondence dictionaries.
+Rubinate is a [minitype](https://typeset.jp) plugin for automatic Japanese ruby, using Lindera and reading correspondence dictionaries.
 
 Rubinate returns standard minitype ruby inlines. minitype handles typography, line breaking and page layout.
 
