@@ -1,0 +1,47 @@
+{
+  "upstream": "https://github.com/rice8y/auto-jrubby",
+  "revision": "5096e9fcd4f07e22b9b0d93d363b5c3b140f0c4b",
+  "description": "Rebuilt locally from the project sources in wasm-plugins; see Cargo.lock for dependency revisions.",
+  "sha256": {
+    "assets/ipadic.wasm": "b3a681b9de789344bb697ce1091fd242998c04ea3dba282f1afbba4b2defb856",
+    "assets/jmdict_furigana.wasm": "e0538eaf22c5066b77fd73e8c6f2590f4be089c9c5d69fcb22ae5393df0f77ec",
+    "wasm-plugins/jmdict-furigana/Cargo.toml": "733ef0cce5d54c785d6cdcaa867d7e8a3201aa2bbcee0b36242427ecf06cb99c",
+    "wasm-plugins/jmdict-furigana/Cargo.lock": "f6b2ec667ff9eaf521fe4d3fd320243a2f6d9127a647c0dfbad5bc129167a72f",
+    "wasm-plugins/common/ruby.rs": "3880edc476e25c72a85355ffe22f8baab4b671d9ae21e3a6a9d664f8f6440592",
+    "wasm-plugins/ipadic/Cargo.toml": "7d8761b23044b0b9a80822b6c189214ec1e1c3cea87a431e800768a2f0cb19fe",
+    "wasm-plugins/ipadic/Cargo.lock": "9cc20391896468246bd4ece8212b936f7d09f19110cc8e2aad14dc4c3c9ebd4b",
+    "wasm-plugins/ipadic/src/lib.rs": "f7b3a956ada407c9f55d636f1b25b53f8ac52c6e8601a5355c7a64be5b73b2c6",
+    "wasm-plugins/jmdict-furigana/assets/JmnedictFurigana.blocks.zst": "5c58664423c393630880376e3de84ac6af6dbd78d9faab335aa3ed4d3ffc4120",
+    "wasm-plugins/jmdict-furigana/assets/JmdictFurigana.blocks.zst": "4d84213178cdd5eb24307f52e4bf55b07682fef3e51e5a6b3c49ba8d6ff96ec8",
+    "wasm-plugins/jmdict-furigana/assets/JmdictFurigana.blocks.idx": "57bfd1ab1ae45106536b4d1c2f0544a7183e51f3ef26f0be62e0a3cdffc8f9ef",
+    "wasm-plugins/jmdict-furigana/assets/JmnedictFurigana.blocks.idx": "712155b4ca3427db4fca53066314a630f46fed96037c07f363dc295771250591",
+    "wasm-plugins/jmdict-furigana/src/lib.rs": "9c8b75de3b30041131de3b5c693c6fc7221afa175e9a7b7b8b2e869b5b28234c",
+    "assets/unidic.wasm": "492b058a6d34f4d3ba8f2365b636af28a57a3f9373d79769398d93957e626986",
+    "wasm-plugins/unidic/Cargo.toml": "f3cdf2547f1520c90d13421b9446779342d1f18fb864b1e9b840ef11ecbc7ea7",
+    "wasm-plugins/unidic/Cargo.lock": "dddaf30a18ef1a63d62086db6a2cc1c7d2d66f019e7d3e8cfe06a9ed25f3a610",
+    "wasm-plugins/unidic/src/lib.rs": "9b29566b3e34fc00d55e9c062cd4ec7318d532e79029bca7d9749428091a89ee",
+    "wasm-plugins/NOTICE.md": "b449648979482db1dcd153e3cbc68bf78beedaa8d31d665f4b4bf018a45cb3a6",
+    "wasm-plugins/common/abi.rs": "6c4426b162353053488c6995e6daabfb05e1d479c3ab941584eaa5c1c318d331",
+    "LICENSE": "1aceeeda9fc79e11c241e06f59b3327212e6b6cb29277c5b507c226411484c24"
+  },
+  "externalNotices": {
+    "wasm-plugins/NOTICE.md#ipadic": "https://raw.githubusercontent.com/taku910/mecab/master/mecab-ipadic/COPYING",
+    "wasm-plugins/NOTICE.md#lindera": "https://raw.githubusercontent.com/rice8y/lindera_fork/33f5874c934877382bfebd9a6acc62e36f58d208/LICENSE"
+  },
+  "unidicArchive": {
+    "url": "https://Lindera.dev/unidic-mecab-2.1.2.tar.gz",
+    "md5": "f4502a563e1da44747f61dcd2b269e35",
+    "licenseChoice": "BSD-3-Clause"
+  },
+  "consolidatedNotices": {
+    "wasm-plugins/LICENSE": "d3e2144999856155b305ebf7a86943b8ade5fb87949b088485f69b480b6dcfcc",
+    "wasm-plugins/LINDERA_LICENSE": "d37249886de3136db31717f15f6ade215a36fbed1c782381e38b2bf6047e8ec4",
+    "wasm-plugins/IPADIC_COPYING": "fca02d9adb601d101eccdf3131119abfff2d9c825ef5c759d7a89ebbaa972099",
+    "wasm-plugins/UNIDIC_COPYING": "178ffb7cbc2beadb0b87a14497e58222b484076ba7cfc8938a07ac7627fa22c4",
+    "wasm-plugins/UNIDIC_BSD": "7917ecfaf95a5ba7b4f45aa9a845ac931d79c90f39b7e711442dbc21c612560f",
+    "wasm-plugins/UNIDIC_AUTHORS": "a05bfdd3a9db36d9c64495f4a3d1824d05b95fbb4fc6dc07c660e91bc191c481",
+    "wasm-plugins/JMDICT_NOTICE": "11b436e4c3a04389ac4e41fde090df2b477068a74be7efc16bc49379251dc1b0",
+    "wasm-plugins/jmdict-furigana/NOTICE": "11b436e4c3a04389ac4e41fde090df2b477068a74be7efc16bc49379251dc1b0"
+  },
+  "consolidatedNoticesDescription": "Original notice filenames and SHA-256 hashes before consolidation. The historical AGPL notice hash identifies the original upstream notice. Current license information is in LICENSE and wasm-plugins/NOTICE.md. Other notices are consolidated in wasm-plugins/NOTICE.md; whitespace is normalized, UniDic authors and license options are presented together, and two non-UTF-8 trailing bytes after the IPADIC notice are omitted. The furigana notice is reformatted as prose, retaining its source, release, attribution, license links and description of transformations."
+}
