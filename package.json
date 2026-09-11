@@ -1,6 +1,6 @@
 {
   "name": "minitype-plugin-rubinate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Automatic Japanese ruby for minitype using Lindera IPADIC/UniDic WASM and furigana dictionaries",
   "repository": {
     "type": "git",
@@ -41,7 +41,8 @@
     "tsconfig.check.json",
     "tsconfig.examples.json",
     "examples/*.tsx",
-    "tsconfig.tests.json"
+    "tsconfig.tests.json",
+    "scripts/package-npm.mjs"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -51,7 +52,9 @@
     "prepack": "npm run build",
     "documentation": "npm run build && npm run check && tsc -p tsconfig.docs.json && node docs/.generated/build/index.js",
     "documentation:images": "npm run build && npm run check && tsc -p tsconfig.docs.json && node docs/.generated/build/readme-images.js",
-    "example:tsx": "npm run build && tsc -p tsconfig.examples.json && node examples/.generated/tsx.js"
+    "example:tsx": "npm run build && tsc -p tsconfig.examples.json && node examples/.generated/tsx.js",
+    "pack:npm": "node scripts/package-npm.mjs",
+    "publish:npm": "node scripts/package-npm.mjs --publish"
   },
   "engines": {
     "node": "^20.16.0 || >=22.3.0"
@@ -65,5 +68,10 @@
     "@minitype/tsx": "^0.1.1",
     "@types/node": "^20.19.43",
     "typescript": "^5.8.0"
-  }
+  },
+  "keywords": [
+    "minitype",
+    "typesetting",
+    "ruby"
+  ]
 }

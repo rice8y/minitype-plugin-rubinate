@@ -53,12 +53,12 @@ export interface RubinateConfig extends RubyOptions {
 
 const han = /[\p{Script=Han}々〆ヵヶ]/u;
 const readingPattern = /^[\p{Script=Hiragana}\p{Script=Katakana}ー\u3099\u309a]+$/u;
-const hira = (s: string) => s.normalize("NFC").replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+const hira = (s: string) => s.replace(/[\uFF66-\uFF9F]+/g, kana => kana.normalize("NFKC")).normalize("NFC").replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
 const kata = (s: string) => hira(s).replace(/[ぁ-ゖ]/g, c => String.fromCharCode(c.charCodeAt(0) + 0x60));
 
 /** Split only when all kana anchors have exactly one complete alignment. */
 export function alignReading(surface: string, reading: string): Segment[] {
-  if (!han.test(surface) || !readingPattern.test(reading)) return [{ text: surface }];
+  if (!han.test(surface) || !readingPattern.test(hira(reading))) return [{ text: surface }];
   const fallback = [{ text: surface, reading }];
   const runs = surface.match(/[\p{Script=Han}々〆ヵヶ]+|[^\p{Script=Han}々〆ヵヶ]+/gu)!;
   // Bound recursion and matching work for pathological custom tokens.
@@ -104,6 +104,14 @@ export function createRubinate(config: RubinateConfig = {}) {
   async function analyze(text: string, options: RubyOptions = {}): Promise<AnalyzedToken[]> {
     if (typeof text !== "string") throw new TypeError("text must be a string");
     const settings = { dictionary: "ipadic" as Dictionary, correspondence: true, kana: "hiragana", granularity: "kanji", ...defaults, ...options };
+    // Explicit undefined is equivalent to omitting an optional setting.
+    for (const key of ["dictionary", "correspondence", "kana", "granularity"] as const) {
+      if (settings[key] === undefined) {
+        Object.assign(settings, { [key]: defaults[key] === undefined
+          ? { dictionary: "ipadic", correspondence: true, kana: "hiragana", granularity: "kanji" }[key]
+          : defaults[key] });
+      }
+    }
     if (settings.dictionary !== "ipadic" && settings.dictionary !== "unidic") throw new TypeError("dictionary must be ipadic or unidic");
     if ("splitMode" in settings) throw new TypeError("splitMode was removed: the bundled Lindera uses normal mode");
     if (typeof settings.correspondence !== "boolean") throw new TypeError("correspondence must be a boolean");
@@ -114,7 +122,7 @@ export function createRubinate(config: RubinateConfig = {}) {
     const readings = { ...defaults.readings, ...options.readings };
     const keys = Object.keys(readings).sort((a, b) => b.length - a.length);
     for (const key of keys) {
-      if (!key || (readings[key] !== null && (typeof readings[key] !== "string" || !readingPattern.test(readings[key]!)))) {
+      if (!key || (readings[key] !== null && (typeof readings[key] !== "string" || !readingPattern.test(hira(readings[key]!))))) {
         throw new TypeError("readings must map nonempty surfaces to kana readings or null");
       }
     }

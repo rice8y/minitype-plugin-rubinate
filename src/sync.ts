@@ -13,7 +13,7 @@ export interface SyncRubinateConfig extends RubyOptions {
 
 const han = /[\p{Script=Han}々〆ヵヶ]/u;
 const readingPattern = /^[\p{Script=Hiragana}\p{Script=Katakana}ー\u3099\u309a]+$/u;
-const hira = (s: string) => s.normalize("NFC").replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+const hira = (s: string) => s.replace(/[\uFF66-\uFF9F]+/g, kana => kana.normalize("NFKC")).normalize("NFC").replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
 const kata = (s: string) => hira(s).replace(/[ぁ-ゖ]/g, c => String.fromCharCode(c.charCodeAt(0) + 0x60));
 
 /** Synchronous Rubinate instance intended for @minitype/tsx components. */
@@ -24,6 +24,14 @@ export function createRubinateSync(config: SyncRubinateConfig = {}) {
   function analyze(text: string, options: RubyOptions = {}): AnalyzedToken[] {
     if (typeof text !== "string") throw new TypeError("text must be a string");
     const settings = { dictionary: "ipadic" as Dictionary, correspondence: true, kana: "hiragana", granularity: "kanji", ...defaults, ...options };
+    // Explicit undefined is equivalent to omitting an optional setting.
+    for (const key of ["dictionary", "correspondence", "kana", "granularity"] as const) {
+      if (settings[key] === undefined) {
+        Object.assign(settings, { [key]: defaults[key] === undefined
+          ? { dictionary: "ipadic", correspondence: true, kana: "hiragana", granularity: "kanji" }[key]
+          : defaults[key] });
+      }
+    }
     if (settings.dictionary !== "ipadic" && settings.dictionary !== "unidic") throw new TypeError("dictionary must be ipadic or unidic");
     if ("splitMode" in settings) throw new TypeError("splitMode was removed: the bundled Lindera uses normal mode");
     if (typeof settings.correspondence !== "boolean") throw new TypeError("correspondence must be a boolean");
@@ -34,7 +42,7 @@ export function createRubinateSync(config: SyncRubinateConfig = {}) {
     const readings = { ...defaults.readings, ...options.readings };
     const keys = Object.keys(readings).sort((a, b) => b.length - a.length);
     for (const key of keys) {
-      if (!key || (readings[key] !== null && (typeof readings[key] !== "string" || !readingPattern.test(readings[key]!)))) {
+      if (!key || (readings[key] !== null && (typeof readings[key] !== "string" || !readingPattern.test(hira(readings[key]!))))) {
         throw new TypeError("readings must map nonempty surfaces to kana readings or null");
       }
     }
