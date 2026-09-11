@@ -280,7 +280,7 @@ Rubinate uses IPADIC and UniDic analyzers, okurigana alignment and furigana corr
 
 The WASM assets are about 11 MiB for IPADIC, 44 MiB for UniDic and 5.4 MiB for correspondence. All are packaged, but only the selected analyzer loads. They load lazily and are shared per process. Processing is synchronous inside the async API; a worker is appropriate when event-loop latency matters. `config.tokenizer` can replace the analyzer; see the manual's custom tokenizer example and contract.
 
-## Development and documentation
+## Development
 
 ```sh
 npm test                 # Build, type-check and run regression tests
