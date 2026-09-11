@@ -290,8 +290,6 @@ npm run documentation:images # Regenerate standalone README images
 npm pack                 # Package binaries, sources and documentation
 ```
 
-The documentation follows the Quick Start / Usage / Public API / License structure, with a layout adapted from [minitype-plugin-chemagram](https://github.com/rice8y/minitype-plugin-chemagram). Listings are extracted from the same TypeScript functions that produce the rendered examples. See [docs/README.md](docs/README.md) for its source structure.
-
 Exact binary hashes and source provenance are in [assets/manifest.json](assets/manifest.json). The package maintains the corresponding Rust sources and dictionary data under [wasm-plugins](wasm-plugins). Optional WASM rebuild instructions are in the manual.
 
 ## License
